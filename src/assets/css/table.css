@@ -1,0 +1,18 @@
+.item{
+    margin:15px 0px 15px -20px;
+    /* padding:0 0 0 -20px; */
+  }
+  .el-table{
+    max-width: 130%;
+    max-height:59vh;
+    /* overflow-x: scroll; */
+    overflow-y: scroll;
+  }
+  .header{
+    padding:0 0 10px 20px
+  }
+  /* .content{ */
+    /* max-width: none;
+    max-height:88vh; */
+    
+  /* } */

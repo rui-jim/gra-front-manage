@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>CSS实现div的全屏自适应显示(两种方案)</title>
+        <style type="text/css">
+            
+            html,
+            body {
+                padding: 0;
+                margin: 0;
+                /* height: 100%; */
+                overflow: hidden;
+            }
+            .m-demo {
+                /* height: 100%; */
+                background: #666666;
+            }
+            .m-demo2 {
+                position: absolute;
+                height: 50vh;
+                width: 50vw;
+                top: 0;
+                bottom: 0;
+                overflow: hidden;
+                word-break: break-all;
+                background: green;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="m-demo"></div>
+        <div class="m-demo2"></div>
+    </body>
+</html>
