@@ -23,25 +23,29 @@ import tag from "../tag/index";
 import sidebar from "../sidebar/index.vue";
 
 export default {
-  data() {
-    return {
-      data: 2000,
-    };
-  },
   components: {
     sidebar,
     contentMenu,
     tag,
     headerContent,
   },
+  data() {
+    return {
+      data: 2000,
+    };
+  }
 
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+@import "@/assets/theme/theme.scss";
+
+
 .el-dropdown-link {
   cursor: pointer;
-  color: #409eff;
+  color:  $theme-color;
 }
 .el-icon-arrow-down {
   font-size: 12px;
@@ -51,7 +55,7 @@ export default {
   overflow: hidden;
 }
 .el-header {
-  background: rgb(14, 83, 211);
+  background:  $theme-color;
   padding: 0 30px;
 }
 .el-header img {
@@ -77,7 +81,7 @@ export default {
 .el-container {
   width: 100%;
   height: 100%;
-  background: rgb(46, 98, 196);
+  background:  $theme-color;
   /* background: rgb(7, 92, 190); */
 }
 
@@ -95,7 +99,7 @@ export default {
 }
 
 .main-router{
-  padding: 40px;
+  // padding: 40px;
 }
 
 .router-view {

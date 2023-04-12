@@ -9,20 +9,21 @@
       </span>
     </el-dialog>
 
-    <el-dropdown trigger="click">
+    <el-dropdown trigger="click" @command="dropCommand">
       <span class="el-dropdown-link">
         <el-avatar shape="circle" :size="50" :src="url"></el-avatar>
         <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item @click="showUserInfo">个人信息</el-dropdown-item>
-        <el-dropdown-item>注销</el-dropdown-item>
+        <el-dropdown-item command="showUserInfo">个人信息</el-dropdown-item>
+        <el-dropdown-item command="logout" >退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
+import { logout } from "@/api/login"
 export default {
   data() {
     return {
@@ -32,9 +33,22 @@ export default {
     };
   },
   methods: {
+    // 点击了下拉菜单后携带按钮的command进行方法区分
+    dropCommand(command){
+      if( command == 'showUserInfo'){
+        this.showUserInfo()
+      }else if(command == 'logout'){
+        this.userLogout()
+      }
+    },
+    // 展示用户信息
     showUserInfo() {
       this.showUserInfoVisible = true;
     },
+    // 用户退出登录
+    userLogout(){
+      logout()
+    }
   },
   computed: {
     ...mapGetters(["userInfo"]),

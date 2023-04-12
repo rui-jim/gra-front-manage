@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>欢迎登录 {{ userInfo.name }}</h2>
+    <h2>欢迎登录 {{ userInfo?userInfo.name:'' }}</h2>
   </div>
 </template>
 <script>

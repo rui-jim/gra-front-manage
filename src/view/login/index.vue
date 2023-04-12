@@ -43,7 +43,7 @@ import { setToken, getToken } from "@/util/tokenUtils";
 export default {
   data() {
     return {
-      inputForm: { account: "user", password: "user" },
+      inputForm: { account: "admin", password: "123456" },
     };
   },
   methods: {
@@ -58,6 +58,7 @@ export default {
         });
       } else {
         loginUser(this.inputForm).then((response) => {
+          console.log("login response ",response)
           if (response.success) {
             console.log("response login ", response);
             this.$message({
@@ -67,7 +68,7 @@ export default {
             setToken(response.data.token);
             console.log("token ", getToken());
             this.$store.dispatch("tagTest/clear_tag");
-            this.$router.push({ path: "/" });
+            this.$router.push({ path: "/index" });
           } else {
             this.$message({
               type: "error",

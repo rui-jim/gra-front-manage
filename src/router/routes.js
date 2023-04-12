@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from "@/components/layout/index"
-import patients from "./modules/patients.js"
-import staffs from "./modules/staffs.js"
-import treat from "./modules/treat.js"
+
+import tool from "./modules/tool"
+import func from "./modules/func"
 
 Vue.use(Router)
 
@@ -31,25 +31,8 @@ export default new Router({
       component: () => import("@/view/login/index"),
       hidden: true,
     },
-    {
-      path:"/tool",
-      name:"tool",
-      meta:{title:"开发工具"},
-      component:Layout,
-      hidden:false,
-      children:[
-          {
-              path:"storage",
-              name:"storage",
-              meta:{title:"存储管理"},
-              component:()=>import("@/view/sys/storage/storage.vue")
-          }
-      
-      ]
-    },
-    staffs,
-    patients,
-    treat
+    func,
+    tool
   ]
 })
 

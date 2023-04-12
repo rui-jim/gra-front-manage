@@ -5,7 +5,7 @@ module.exports = {
     },
     //Cookie过期的信息
     CookieTime: {
-        expire: Date.now() + 60 * 24 * 7
+        expire: Date.now() + 7
     },
     //存放tag标签的信息
     tagTest: {
@@ -13,5 +13,6 @@ module.exports = {
     },
     //存放后端传来的TOKEN
     tokenKey: "MY-TOKEN",
-    title: "美食网站后端"
+    title: "美食网站后端",
+    PREVIEW_URL: "http://120.79.80.229:9000/graduation/"
 }

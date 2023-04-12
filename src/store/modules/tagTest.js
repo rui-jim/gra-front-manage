@@ -8,7 +8,9 @@ const state = {
 
 const mutations = {
     ADD_TAG: (state, test) => {
-        let judge = state.tags.some((v) => { return v.fullPath == test.fullPath })
+        let judge = state.tags.some((v) => { 
+            return v.fullPath == test.fullPath 
+        })
         if (!state.tags.some((v) => { return v.fullPath == test.fullPath })) {
             let arr = state.tags.push(test)
             let tempTags = JSON.stringify(state.tags)
@@ -26,7 +28,10 @@ const mutations = {
     },
     INIT_TAG: (state) => {
         let tempData = JSON.parse(localStorage.getItem(key))
-        state.tags = tempData
+        if(tempData){
+            state.tags = tempData
+        }
+        
     },
     CLEAR_TAG: (state) => {
         state.tags = []

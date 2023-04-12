@@ -26,6 +26,7 @@ const actions = {
             commit("DROP_USERINFO")
             // 清空本地缓存的token
             removeToken()
+            resolve(true)
         })
     }
 }

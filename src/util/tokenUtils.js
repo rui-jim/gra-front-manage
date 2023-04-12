@@ -2,6 +2,7 @@ import Cookies from "js-cookie"
 import settings from "../settings"
 
 let tokenKey = settings.tokenKey
+
 export function setToken(token) {
     Cookies.set(tokenKey, token, { expires: settings.CookieTime.expire })
 }

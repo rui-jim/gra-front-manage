@@ -6,6 +6,7 @@ import router from './router/index'
 import Element from "element-ui"
 import store from "@/store/index"
 import NProgress from "nprogress"
+import global,{$parsePath} from "@/util/global"
 
 import "nprogress/nprogress.css"
 import "element-ui/"
@@ -13,11 +14,11 @@ import 'element-ui/lib/theme-chalk/index.css';
 import "./assets/css/global.css"
 import "./assets/css/table.css"
 
-
+Vue.prototype.$util = global
+Vue.prototype.$parsePath = $parsePath
 Vue.config.productionTip = false
 
 console.log("main.js ===> router", router);
-console.log("main.js ===> this", this);
 
 Vue.use(Element)
 /* eslint-disable no-new */
