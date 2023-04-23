@@ -1,6 +1,6 @@
 <template>
   <el-container class="Home_container">
-    <el-header>
+    <el-header style="height: auto;">
       <header-content></header-content>
     </el-header>
     <el-container>
@@ -9,7 +9,7 @@
       </el-aside>
 
       <el-main>
-        <contentMenu class="common"></contentMenu>
+        <contentMenu class="common" style="padding: 15px;"></contentMenu>
         <tag class="common"></tag>
         <router-view class="common main-router"></router-view>
       </el-main>
@@ -56,7 +56,7 @@ export default {
 }
 .el-header {
   background:  $theme-color;
-  padding: 0 30px;
+  padding: 10px 30px;
 }
 .el-header img {
   height: 100px;
@@ -89,12 +89,15 @@ export default {
   background: rgb(219, 216, 216);
   color: rgb(51, 51, 51);
   padding: 10px;
+  padding-bottom: 80px;
   /* line-height: 160px; */
 }
 
 .common {
   margin: 10px 5px 5px 5px;
-  padding: 10px 5px 5px 5px;
+  padding: 10px 8px;
+  // padding: 12px;
+  border-radius: 4px;
   background-color: rgb(247, 247, 247);
 }
 

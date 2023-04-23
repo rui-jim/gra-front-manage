@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router/index'
-import Element from "element-ui"
+import Element,{Table} from "element-ui"
 import store from "@/store/index"
 import NProgress from "nprogress"
 import global,{$parsePath} from "@/util/global"
@@ -19,6 +19,14 @@ Vue.prototype.$parsePath = $parsePath
 Vue.config.productionTip = false
 
 console.log("main.js ===> router", router);
+
+const fixElTableErr = (table) => {
+  const oldResizeListener = table.methods.resizeListener;
+  table.methods.resizeListener = function () {
+      window.requestAnimationFrame(oldResizeListener.bind(this));
+  };
+};
+fixElTableErr(Table)
 
 Vue.use(Element)
 /* eslint-disable no-new */

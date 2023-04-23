@@ -1,6 +1,6 @@
 <template>
   <div class="header-box">
-    医院管理系统
+    美食网站后台管理系统
 
     <el-dialog :visible.sync="showUserInfoVisible" width="60%">
       <span slot="footer" class="dialog-footer">
@@ -10,7 +10,11 @@
     </el-dialog>
 
     <el-dropdown trigger="click" @command="dropCommand">
-      <span class="el-dropdown-link">
+      <span v-if="userInfo.uavatar" class="el-dropdown-link">
+        <el-avatar shape="circle" :size="50" :src="$parsePath(userInfo.uavatar)"></el-avatar>
+        <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
+      </span>
+      <span v-else class="el-dropdown-link">
         <el-avatar shape="circle" :size="50" :src="url"></el-avatar>
         <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
       </span>
@@ -31,6 +35,9 @@ export default {
       url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       showUserInfoVisible: false,
     };
+  },
+  created(){
+    console.log("eeeeeeeeeeeeerrrrrrrrrrrr",this)
   },
   methods: {
     // 点击了下拉菜单后携带按钮的command进行方法区分
@@ -58,6 +65,7 @@ export default {
 
 <style scoped>
 .header-box {
+  padding: 10px 0;
   width: 100%;
   display: flex;
   justify-content: space-between;

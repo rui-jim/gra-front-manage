@@ -1,14 +1,19 @@
 import router from "./routes";
-import { getToken } from "@/util/tokenUtils";
+import { getToken,setToken } from "@/util/tokenUtils";
 import { getUserInfo } from "@/api/user/userInfo";
-import Cookies from "js-cookie";
 import NProgress from "nprogress"
 import store from "@/store/index"
+import settings from "@/settings";
+
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
-console.log("store===========>", store)
 router.beforeEach((to, from, next) => {
+    console.log('router before ============> ',to,from,next)
     NProgress.start()
+    // 如果携带的前往页面包含认证信息 则直接将其存入Token并进行处理
+    if(to.query[settings.SSO_receiveFrontAuthHeader] && to.path && to.path == '/index'){
+        setToken(to.query[settings.SSO_receiveFrontAuthHeader])
+    }
     if (to.path === "/login") {
         next()
     } else {
@@ -18,9 +23,11 @@ router.beforeEach((to, from, next) => {
                 NProgress.set(0.7)
                 loadInfo(next, to)
             } else {
+                NProgress.set(1)
                 next()
             }
         } else {
+            NProgress.set(1)
             next({ path: '/login' })
         }
     }
@@ -47,7 +54,11 @@ function loadInfo(next, to) {
         // store.dispatch().then(() => {
 
         // })
-        next({ path: '/login' })
+        
+    }).finally(()=>{
+        NProgress.set(1)
+        // next({ path: '/login' })
+        next()
     })
 }
 router.afterEach(() => {

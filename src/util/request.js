@@ -3,6 +3,7 @@ import store from "../store"
 import { getToken,removeToken } from "@/util/tokenUtils"
 import { Notification } from 'element-ui'
 import router from '@/router/index'
+import { defaultHeader } from "@/settings"
 
 console.log("PROcess2 ",process.env,process.env.VUE_APP_BASE_API)
 const service = axios.create({
@@ -13,6 +14,7 @@ const service = axios.create({
 service.interceptors.request.use(config => {
   let token = getToken()
   config.headers["token"] = token
+  config.headers = {...config.headers,...defaultHeader}
   return config
 }, error => {
   console.log(error) // for debug
@@ -33,6 +35,7 @@ service.interceptors.response.use(
           title: "请重新进行登录",
           duration: 2000
         })
+        removeToken()
         router.push({ path: '/login' })
       })
       // 其他异常一律重新登录

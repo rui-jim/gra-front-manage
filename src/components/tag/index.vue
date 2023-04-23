@@ -1,6 +1,6 @@
 
 <template>
-  <div v-if="tags">
+  <div v-if="tags.length > 0">
     <el-tag
       :key="tag.fullPath"
       v-for="tag in tags"

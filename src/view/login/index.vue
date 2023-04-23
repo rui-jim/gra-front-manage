@@ -40,6 +40,8 @@
 import { loginUser } from "@/api/login";
 import Cookies from "js-cookie";
 import { setToken, getToken } from "@/util/tokenUtils";
+import { encryt } from "@/util/RSAUtil"
+
 export default {
   data() {
     return {
@@ -49,15 +51,23 @@ export default {
   methods: {
     login() {
       if (
-        this.inputForm.account === undefined &&
+        this.inputForm.account === undefined ||
         this.inputForm.password === undefined
       ) {
         this.$message({
           type: "warning",
           message: "请填写完整账号或密码",
         });
-      } else {
-        loginUser(this.inputForm).then((response) => {
+      } else if(this.inputForm.password.length > 128){
+        this.$message({
+          type: "warning",
+          message: "密码的长度不能超过128位",
+        });
+      }else {
+        console.log("this ",this)
+        let tempForm = this.$util.deepClone(this.inputForm)
+        tempForm.password = encryt(tempForm.password)
+        loginUser(tempForm).then((response) => {
           console.log("login response ",response)
           if (response.success) {
             console.log("response login ", response);
@@ -68,7 +78,7 @@ export default {
             setToken(response.data.token);
             console.log("token ", getToken());
             this.$store.dispatch("tagTest/clear_tag");
-            this.$router.push({ path: "/index" });
+            this.$router.push({ path: "/" });
           } else {
             this.$message({
               type: "error",

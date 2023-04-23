@@ -16,6 +16,12 @@ const sys={
             name:"storage",
             meta:{title:"存储管理"},
             component:()=>import("@/view/sys/storage/storage")
+        },
+        {
+            path:"quart/manage",
+            name:"quartManage",
+            meta:{title:"定时任务管理"},
+            component:()=>import("@/view/sys/storage/storage")
         }
     
     ],

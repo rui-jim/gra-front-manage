@@ -120,6 +120,7 @@ export default {
 }
 
 export function $parsePath(path){
+  if(!path)return
   if(typeof path != 'string' || path.startsWith("http")) return
   return PREVIEW_URL+path
 }

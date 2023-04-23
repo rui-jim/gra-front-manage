@@ -21,7 +21,11 @@ export default new Router({
         {
           path: "index",
           name: "mindexy1",
-          component: () => import("@/view/welcome/index")
+          component: () => import("@/view/welcome/index"),
+          beforeEnter: (to,from,next)=>{
+            console.log("跳转到后台管理系统首页的信息",to,from,next)
+            next()
+          }
         }
       ]
     },

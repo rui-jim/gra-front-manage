@@ -25,7 +25,7 @@
                     </el-form-item>
                     <el-form-item label="名称：" style="margin-left: 40px;">
                         <el-input v-model="searchObj.name" placeholder="请输入名称" class="selWidth" size="small" clearable
-                            @change="handlerSearch">
+                            @blur="handlerSearch">
                             <el-button slot="append" icon="el-icon-search" @click="handlerSearch" size="small"/>
                         </el-input>
                     </el-form-item>
@@ -34,7 +34,7 @@
                 <el-button size="mini"  style="margin-top: 10px;" type="primary"  @click="addCategory">新增分类</el-button>
             </div>
         </el-card>
-        <el-table :data="tableData" style="width: 100%;margin-bottom: 20px;"
+        <el-table :data="tableData" style="width: 100%;margin-bottom: 20px;padding: 20px;"
          row-key="id" border  highlight-current-row 
          :tree-props="{children: 'child', hasChildren: 'chil'}">
             <el-table-column prop="name" label="分类名称" sortable width="180">
@@ -50,48 +50,51 @@
 
             <el-table-column label="显示" >
                 <template slot-scope="scope">
-                    <el-switch v-model="scope.row.isShow" ></el-switch>
+                    <el-switch v-model="scope.row.isShow" disabled ></el-switch>
                 </template>
             </el-table-column>
             <el-table-column label="热门" >
                 <template slot-scope="scope">
-                    <el-switch v-model="scope.row.isHot" ></el-switch>
+                    <el-switch v-model="scope.row.isHot" disabled ></el-switch>
                 </template>
             </el-table-column>
             <el-table-column label="分类横幅" >
                 <template slot-scope="scope">
-                    <el-switch v-model="scope.row.isBanner" ></el-switch>
+                    <el-switch v-model="scope.row.isBanner" disabled ></el-switch>
                 </template>
             </el-table-column>
             <el-table-column label="推荐" >
                 <template slot-scope="scope">
-                    <el-switch v-model="scope.row.isRecommand" ></el-switch>
+                    <el-switch v-model="scope.row.isRecommand" disabled ></el-switch>
                 </template>
             </el-table-column>
 
             <el-table-column prop="sort" width label="排序" sortable>
             </el-table-column>
-            <el-table-column prop="createTime" min-width="100" label="创建日期" sortable>
+            <el-table-column prop="createTime" min-width="150" label="创建日期" sortable>
             </el-table-column>
-            <el-table-column prop="modifiedTime" min-width="100" label="创修改期" sortable>
+            <el-table-column prop="modifiedTime" min-width="150" label="创修改期" sortable>
             </el-table-column>
 
-            <el-table-column label="操作" min-width="120" fixed="right">
+            <el-table-column label="操作" min-width="200" >
                 <template slot-scope="scope">
-                    <el-button v-if="!scope.row.pid" type="text"  @click="handleAddSubCategory(scope.row)" >
-                        添加子分类
-                    </el-button>
-                  <el-button type="text"  @click="handleEditCategory(scope.row)">编辑</el-button>
-                  <el-button type="text"  @click="handleDelCategory(scope.row)">删除</el-button>
+                    <div  style="display: flex;justify-content: center;align-items: center;">
+                        <el-button v-if="!scope.row.pId" type="text"  @click="handleAddSubCategory(scope.row)" >
+                            添加子分类
+                        </el-button>
+                        
+                        <el-button type="text"  @click="handleEditCategory(scope.row)">编辑</el-button>
+                        <el-button type="text"  @click="handleDelCategory(scope.row)">删除</el-button>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
 
         <el-dialog :modal-append-to-body="false" 
             :title="(dialogConfig.isCreate?'创建分类':'编辑分类')"
-            :visible.sync="dialogConfig.visible" destroy-on-close :close-on-click-modal="false"
+            :visible="dialogConfig.visible" :close-on-click-modal="true"
             @close="closeDialog()">
-            <add-category :isCreate="dialogConfig.isCreate" :parentConfig="dialogConfig.parentConfig" :initCategory="dialogConfig.initCategory"
+            <add-category v-if="dialogConfig.visible" :isCreate="dialogConfig.isCreate" :parentConfig="dialogConfig.parentConfig" :initCategory="dialogConfig.initCategory"
                 @closeDialog="closeDialog()" @refreshTable="refreshTable()"></add-category>
         </el-dialog>
     </div>    
@@ -148,7 +151,15 @@ export default {
                     pId: "",
                     name: "", // 父类名称
                 }, // 父级菜单的信息
-                initCategory: {}// 用来初始化分类的信息
+                initCategory: {
+                    name: "", // 分类名称
+                    cover: "", // 封面图片
+                    isShow: true, // 是否展示该菜单
+                    isHot: false, // 是否标记为热门
+                    isBanner: false, // 菜谱可以出现在横条的筛选上
+                    isRecommand: false, // 出现做首页左边的推荐栏
+                    sort: 0,
+                }// 用来初始化分类的信息
             }
         },
         // 删除分类
@@ -181,7 +192,7 @@ export default {
             this.dialogConfig.initCategory = row
             if(row.pId){
                 this.dialogConfig.parentConfig.pId = row.pId
-                this.dialogConfig.parentConfig.name = row.name
+                this.dialogConfig.parentConfig.name = row.pName
             }else{
                 this.dialogConfig.parentConfig.pId = ""
                 this.dialogConfig.parentConfig.name = ""
@@ -196,13 +207,17 @@ export default {
 
         // 刷新表格
         refreshTable(){
-            this.getTableData(this.searchObj,{ page: 1, size: 10 })
-            this.dialogConfig.visible = false
+            this.getTableData(this.searchObj)
         },
         // 获得表格数据
         getTableData(searchObj){
             listReceiptCategory(searchObj).then( resp => {
                 this.tableData = resp.data.data
+                this.tableData.forEach( val => {
+                    val.child.forEach( value => {
+                        value.pName = val.name
+                    })
+                })
             })
         },
         // 新增分类

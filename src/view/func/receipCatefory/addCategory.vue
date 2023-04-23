@@ -1,14 +1,14 @@
 <template>
     <div>
         <el-form ref="editParam" :model="editParam" label-width="130px">
-            <el-form-item v-if="parentConfig.name" label="父分类名称" prop="name"  :rules="isCreate?[{ required:true,message:'请输入分类名称',trigger:['blur','change'] }]:''">
+            <el-form-item v-if="parentConfig.name" label="父分类名称"  >
                 <el-input v-model="parentConfig.name" disabled placeholder="分类名称" />
             </el-form-item>
             <el-form-item label="分类名称" prop="name"  :rules="[{ required:true,message:'请输入分类名称',trigger:['blur','change'] }]">
                 <el-input v-model="editParam.name"  placeholder="分类名称" />
             </el-form-item>
             <!-- 如果父分类存在 则这个不创建 -->
-            <el-form-item v-if="!parentConfig.name" label="一级分类图片" prop="name" >
+            <el-form-item v-if="!parentConfig.name" label="一级分类图片" >
                 <el-upload class="upload" ref="upload" drag :action="uploadPath" :headers="header" :limit="1" :multiple="false"
                     :file-list="uploadObj.fileList" list-type="picture-card" :auto-upload="true" 
                     :on-success="uploadSuccess" :before-upload="uploadBefore">
@@ -62,6 +62,7 @@
 
 <script>
 import { getToken } from '@/util/tokenUtils';
+import { defaultUploadPath,defaultHeader,defaultLimitFileSize,defaultLimitFileDesc } from "@/settings"
 import { saveReceiptCategory,updateReceiptCategory } from "@/api/func/receipCategory"
 
 export default {
@@ -80,14 +81,24 @@ export default {
             default: () => { return {} }
         }
     },
+    // watch: {
+    //     isCreate(){},
+    //     parentConfig(){},
+    //     initCategory(){
+    //         this.editParam = this.initCategory
+    //         this.$nextTick(() => {
+    //             this.$refs['editParam'].validate()
+    //         })
+    //     }
+    // },
     data(){
         return {
-            uploadPath: "http://localhost:5050/file/storage/upload", // 上传地址
+            uploadPath: defaultUploadPath, // 上传地址
             header: {}, // 发送数据的头部地址
             editParam: { // 需要进行创建或者修改的存放对象
                 name: "", // 分类名称
                 cover: "", // 封面图片
-                isShow: false, // 是否展示该菜单
+                isShow: true, // 是否展示该菜单
                 isHot: false, // 是否标记为热门
                 isBanner: false, // 菜谱可以出现在横条的筛选上
                 isRecommand: false, // 出现做首页左边的推荐栏
@@ -101,8 +112,13 @@ export default {
             loadingStatus: false // 加载状态
         }
     },
+    destroyed(){
+        console.log("ADD destroyed")
+    },
     created(){
         console.log("this ",this)
+        // 将默认头进行绑定
+        this.header = defaultHeader
         // 初始化登录的token信息
         this.header['token'] = getToken()
         // 如果是编辑则初始化信息
@@ -120,9 +136,6 @@ export default {
         }
     },
     methods: {
-        httpRequest(file){
-            console.log("file req ",file)
-        },
         // 上传的图片进行预览
         handlePictureCardPreview(file){
             console.log("PREVIEW FILE ",file)
@@ -157,11 +170,10 @@ export default {
                         this.$message.error(resp.message)
                     }
                     this.$emit("closeDialog")   
+                    this.$emit("refreshTable")
                 }).catch( e => {
                     console.log("appear error ",e)
                     this.$message.error('创建失败，请重新尝试')
-                }).finally( () => {
-                    this.$emit("refreshTable")
                 })
             }else{
                 updateReceiptCategory(editParam).then( resp => {
@@ -171,11 +183,10 @@ export default {
                         this.$message.error(resp.message)
                     }
                     this.$emit("closeDialog")
+                    this.$emit("refreshTable")
                 }).catch( e => {
                     console.log("appear error ",e)
                     this.$message.error('编辑失败，请重新尝试')
-                }).finally( () => {
-                    this.$emit("refreshTable")
                 })
             }
             
@@ -185,10 +196,16 @@ export default {
             this.$emit("closeDialog")
         },
         // 上传之前
-        uploadBefore(){
+        uploadBefore(file){
             if(this.uploadObj.fileList.length > 0){
                 this.$message.error("只能上传一个内容")
+                return false
             }
+            if(file.size > defaultLimitFileSize){
+                this.$message.error(`上传文件的最大大小为${defaultLimitFileDesc}`)
+                return false
+            }
+            return true
         },
         // 上传成功的处理
         uploadSuccess(response,file){
