@@ -12,8 +12,8 @@ module.exports = {
         key: "tag"
     },
     defaultPage: {
-        page: 1,
-        size: 10
+        PAGE: 1,
+        SIZE: 10
     },
     defaultHeader: { // 封装默认头部的信息
         "client": "back"
@@ -26,5 +26,13 @@ module.exports = {
     //存放后端传来的TOKEN
     tokenKey: "MY-TOKEN",
     title: "美食网站后端",
-    PREVIEW_URL: "http://120.79.80.229:9000/graduation/"
+    PREVIEW_URL: "http://120.79.80.229:9000/graduation/",
+    DEFAULT_UNIT_OPTIONS:[
+        {label: "分",value: "minutes"},
+        {label: "小时",value: "hour"},
+        {label: "天",value: "day"},
+        {label: "周",value: "weekend"},
+        {label: "月",value: "month"},
+    ]
 }
+

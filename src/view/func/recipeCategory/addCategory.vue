@@ -9,15 +9,17 @@
             </el-form-item>
             <!-- 如果父分类存在 则这个不创建 -->
             <el-form-item v-if="!parentConfig.name" label="一级分类图片" >
-                <el-upload class="upload" ref="upload" drag :action="uploadPath" :headers="header" :limit="1" :multiple="false"
-                    :file-list="uploadObj.fileList" list-type="picture-card" :auto-upload="true" 
+                <el-upload  class="avatar-uploader" ref="upload" drag :action="uploadPath" :headers="header" :limit="1" :multiple="false"
+                    list-type="picture-card" :auto-upload="true" :show-file-list="false"
                     :on-success="uploadSuccess" :before-upload="uploadBefore">
                     <!-- <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div> -->
-                    <i slot="default" class="el-icon-plus"></i>
-                    <div slot="file" slot-scope="{file}">
-                        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" >
-                        <span class="el-upload-list__item-actions">
+                    <!-- <i slot="default" class="el-icon-plus"></i>
+                    <div slot="file" slot-scope="{file}"> -->
+                        <el-image v-if="editParam.cover"  class="avatar" 
+                            :src="$parsePath(editParam.cover)"  fit="cover"></el-image>
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        <!-- <span class="el-upload-list__item-actions">
                             <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)" >
                                 <i class="el-icon-zoom-in"></i>
                             </span>
@@ -26,7 +28,7 @@
                                 <i class="el-icon-delete"></i>
                             </span>
                         </span>
-                    </div>
+                    </div> -->
                 </el-upload>
             </el-form-item>
             <el-form-item label="是否显示" prop="isShow" >
@@ -50,8 +52,8 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button type="primary" :loading="loadingStatus" @click="handlerSubmit('editParam')">{{ isCreate?'创建':'编辑' }}</el-button>
                 <el-button @click="handlerClose()">取消</el-button>
+                <el-button type="primary" :loading="loadingStatus" @click="handlerSubmit('editParam')">{{ isCreate?'创建':'编辑' }}</el-button>
             </el-form-item>
         </el-form>
         <el-dialog class="preview-dialog" :modal="false" :modal-append-to-body="false" :visible.sync="uploadObj.disabled">
@@ -63,7 +65,7 @@
 <script>
 import { getToken } from '@/util/tokenUtils';
 import { defaultUploadPath,defaultHeader,defaultLimitFileSize,defaultLimitFileDesc } from "@/settings"
-import { saveReceiptCategory,updateReceiptCategory } from "@/api/func/receipCategory"
+import { saveReceiptCategory,updateReceiptCategory } from "@/api/func/recipeCategory"
 
 export default {
     props: {
@@ -148,6 +150,7 @@ export default {
         },
         // 绑定提交的内容
         handlerSubmit(ref){
+            this.$set(this,'loadingStatus',true)
             this.$refs[ref].validate( valid => {
                 if(!valid) return
                 this.$util.debounce(this.handlerSaveOrUpdate(this.isCreate),1000)
@@ -169,6 +172,7 @@ export default {
                     }else{
                         this.$message.error(resp.message)
                     }
+                    this.loadingStatus = false
                     this.$emit("closeDialog")   
                     this.$emit("refreshTable")
                 }).catch( e => {
@@ -232,5 +236,36 @@ export default {
     }
     /* width: 200px;
     height: 150px; */
+}
+
+.avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+}
+
+.avatar-uploader {
+  border: 1px dashed #4C4D4F;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: .2s;;
+  width: 227px !important;
+  height: 168px;
+
+  ::v-deep .el-upload-dragger {
+    width: 227px !important;
+    height: 168px !important;
+  }
+}
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 227px !important;
+  height: 168px;
+  text-align: center;
+}
+.avatar{
+    width: 227px !important; 
+    height: 168px;
 }
 </style>

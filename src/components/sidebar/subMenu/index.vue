@@ -7,16 +7,17 @@
       v-if="!router.hidden"
     >
       <template slot="title">
-        <i class="el-icon-location"></i>
-        <span>{{ router.meta.title }}</span>
+        <i :class="router.icon"></i>
+        <span>{{ router.title }}</span>
       </template>
       <el-menu-item
-        :index="router.path + '/' + item.path"
-        v-for="(item, itemIndex) in router.children"
+        :index="router.path + item.path"
+        v-for="(item, itemIndex) in router.child"
         :key="itemIndex"
       >
-        <i class="el-icon-menu"></i>
-        {{ item.meta.title }}
+      <!-- {{ router.path + item.path }} -->
+        <i :class="item.icon"></i>
+        {{ item.title }}
       </el-menu-item>
     </el-submenu>
   </div>
@@ -33,5 +34,10 @@ export default {
     return {};
   },
   created() {},
+  watch:{
+    menuList(){},
+  },
+  methods:{
+  }
 };
 </script>

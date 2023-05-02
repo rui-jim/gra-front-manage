@@ -15,3 +15,4 @@ export function getMenuInfo() {
         method: "get"
     })
 }
+

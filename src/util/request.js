@@ -32,7 +32,7 @@ service.interceptors.response.use(
     }else if(resp.code == 401){
       store.dispatch("userInfo/logOut").then( res => {
         Notification.error({
-          title: "请重新进行登录",
+          title: response.data.message,
           duration: 2000
         })
         removeToken()

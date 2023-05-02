@@ -19,7 +19,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     port: process.env.PORT,
-    open: true
+    // open: true
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

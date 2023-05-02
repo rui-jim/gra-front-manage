@@ -11,18 +11,28 @@
                             <el-option label="不显示" :value="false"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="热门" style="margin-left: 40px;" >
-                        <el-switch v-model="searchObj.isHot" @change="handlerSearch">
-                        </el-switch>    
+                    <el-form-item label="热门" style="margin-right: 40px;">
+                        <el-select v-model="searchObj.isHot" class="selWidth" @change="handlerSearch">
+                            <el-option label="" :value="null"></el-option>
+                            <el-option label="是" :value="true"></el-option>
+                            <el-option label="否" :value="false"></el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="横幅">
-                        <el-switch v-model="searchObj.isBanner" @change="handlerSearch">
-                        </el-switch>    
+                    <el-form-item label="横幅" style="margin-right: 40px;">
+                        <el-select v-model="searchObj.isBanner" class="selWidth" @change="handlerSearch">
+                            <el-option label="" :value="null"></el-option>
+                            <el-option label="是" :value="true"></el-option>
+                            <el-option label="否" :value="false"></el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="首页推荐">
-                        <el-switch v-model="searchObj.isRecommand" @change="handlerSearch">
-                        </el-switch>    
+                    <el-form-item label="首页推荐" style="margin-right: 40px;">
+                        <el-select v-model="searchObj.isRecommand" class="selWidth" @change="handlerSearch">
+                            <el-option label="" :value="null"></el-option>
+                            <el-option label="是" :value="true"></el-option>
+                            <el-option label="否" :value="false"></el-option>
+                        </el-select>
                     </el-form-item>
+                  
                     <el-form-item label="名称：" style="margin-left: 40px;">
                         <el-input v-model="searchObj.name" placeholder="请输入名称" class="selWidth" size="small" clearable
                             @blur="handlerSearch">
@@ -92,7 +102,7 @@
 
         <el-dialog :modal-append-to-body="false" 
             :title="(dialogConfig.isCreate?'创建分类':'编辑分类')"
-            :visible="dialogConfig.visible" :close-on-click-modal="true"
+            :visible="dialogConfig.visible" :close-on-click-modal="false"
             @close="closeDialog()">
             <add-category v-if="dialogConfig.visible" :isCreate="dialogConfig.isCreate" :parentConfig="dialogConfig.parentConfig" :initCategory="dialogConfig.initCategory"
                 @closeDialog="closeDialog()" @refreshTable="refreshTable()"></add-category>
@@ -103,7 +113,7 @@
 <script>
 import addCategory from "./addCategory.vue"
 import pageUtils from "@/util/pageUtils"
-import { listReceiptCategory,delReceiptCategory } from "@/api/func/receipCategory"
+import { listReceiptCategory,delReceiptCategory } from "@/api/func/recipeCategory"
 import { $parsePath } from "@/util/global"
 
 export default {
@@ -130,9 +140,9 @@ export default {
                 isParent: false, // 开启父分类查找
                 name: "",
                 isShow: null,
-                isHot: false,
-                isBanner: false,
-                isRecommand: false
+                isHot: null,
+                isBanner: null,
+                isRecommand: null
             }
         }
     },

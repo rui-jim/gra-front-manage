@@ -49,7 +49,8 @@
           </el-table-column>
         </el-table>
         <div style="display: flex;justify-content: center;align-items: center;margin: 25px 0;">
-          <el-pagination layout="prev, pager, next" :background="true" :total="paginition.totalCount" :current-page="pageParam.page" :page-size="pageParam.size"> </el-pagination>
+          <el-pagination layout="prev, pager, next" :background="true" :total="paginition.totalCount" 
+            :current-page="pageParam.PAGE" :page-size="pageParam.SIZE" @current-change="handlerPageChange"> </el-pagination>
         </div>
 
         <el-dialog :modal-append-to-body="false" 
@@ -83,8 +84,8 @@ export default {
       searchInput: "", // 查找需要输入的内容
       tableData: [], // 展示的数据
       pageParam: { // 分页参数
-        page: 1, 
-        size: 10
+        PAGE: 1, 
+        SIZE: 10
       },
       searchParam: { // 查询参数
         realName: '' // 源文件名
@@ -110,6 +111,12 @@ export default {
     this.initFileStorage()
   },
   methods: {
+    // 绑定页面页码变化
+    handlerPageChange(page){
+      console.log("handlerPageChange page ",page)
+      this.pageParam.PAGE = page
+      this.initFileStorage()
+    },
     // 绑定删除文件
     handlerRemove(){
       if(this.removeIds.length == 0 ){
