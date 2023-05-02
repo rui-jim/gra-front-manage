@@ -35,8 +35,8 @@ export default new Router({
       component: () => import("@/view/login/index"),
       hidden: true,
     },
-    func,
-    tool
+    // func,
+    // tool
   ]
 })
 

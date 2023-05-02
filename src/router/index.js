@@ -7,6 +7,9 @@ import store from "@/store/index"
 import { getAsyncRouter } from '@/store/modules/menuInfo'
 import settings from "@/settings";
 
+import Layout from "@/components/layout/index"
+
+
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
 router.beforeEach((to, from, next) => {
@@ -45,9 +48,29 @@ function loadInfo(next, to) {
                 getUserComponenttList().then(resp => {
                     console.log("getUserComponentList resp ",resp)
                     store.commit("menuInfo/SET_MENU",resp.data.data)
-                    let route = getAsyncRouter(resp.data.data,false,true)
-                    console.log("route-----------==========>",route)
-                    // router.addRoutes(route)
+
+                    let tempRoute = getAsyncRouter(resp.data.data)
+                    let route = tempRoute.map(val => {
+                        return {
+                            path: val.path,
+                            meta: val.meta,
+                            name: val.name,
+                            hidden: val.hidden,
+                            component: val.component,
+                            children: val.children.map( value => {
+                                return {
+                                    path: value.path,
+                                    meta: value.meta,
+                                    name: value.name,
+                                    hidden: value.hidden,
+                                    component: value.component,
+                                }
+                            })
+                        }
+                    })
+                    route.forEach( val => {
+                        router.addRoute(val) 
+                    })
                 })
             }
             console.log("store init_userInfo ",store.state)

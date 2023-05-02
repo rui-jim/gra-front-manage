@@ -32,56 +32,25 @@ const store = {
 export default store
 
 
-
-export const getAsyncRouter = (routers, lastRouter = false, type = false) => { // 遍历后台传来的路由字符串，转换为组件对象
-return routers.filter(router => {
-    console.log("getAsycRouter")
-    // if (type && router.child) {
-    // router.child = filterChildren(router.child)
-    // console.log("router.child -------- ",router.child)
-    // }
-    if (router.component) {
-        const component = router.component
-        router.component = loadView(component)
-        router.meta = {title: router.title}
-    }
-    if (router.child != null && router.child && router.child.length) {
-        router.children = getAsyncRouter(router.child, router, type)
-        router.component = Layout
-        router.meta = {title: router.title}
-    } else {
-    delete router['child']
-    delete router['redirect']
-    }
-    return true
-})
-}
-
-function filterChildren(childrenMap, lastRouter = false) {
-var child = []
-childrenMap.forEach((el, index) => {
-    if (el.child && el.child.length) {
-        if (el.component === 'ParentView') {
-            el.child.forEach(c => {
-            c.path = el.path + '/' + c.path
-            if (c.child && c.child.length) {
-                child = child.concat(filterChildren(c.child, c))
-                return
-            }
-            child.push(c)
-            })
-            return
+// 配置动态路由信息
+export const getAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
+    return routers.filter(router => {
+        if (router.component) {
+            const component = router.component
+            router.component = loadView(component)
+            router.meta = {title: router.title}
         }
-    }
-    if (lastRouter) {
-    el.path = lastRouter.path + '/' + el.path
-    }
-    child = child.concat(el)
-})
-return child
+        if (router.child != null && router.child && router.child.length) {
+            router.children = getAsyncRouter(router.child)
+            router.component = Layout
+            router.meta = {title: router.title}
+        } else {
+            delete router['child']
+            delete router['redirect']
+        }
+        return true
+    })
 }
-
 export const loadView = (view) => {
-    console.log("VIEW ",view)
-return ()=>import(`@/view${view}`)
+    return ()=>import(`@/view${view}`)
 }

@@ -11,7 +11,7 @@
         <span>{{ router.title }}</span>
       </template>
       <el-menu-item
-        :index="router.path + item.path"
+        :index="`${router.path}/${item.path}`"
         v-for="(item, itemIndex) in router.child"
         :key="itemIndex"
       >
