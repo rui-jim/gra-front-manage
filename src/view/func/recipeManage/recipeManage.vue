@@ -1,5 +1,19 @@
 <template>
     <div style="position: relative;">
+        <el-dialog :modal-append-to-body="false" 
+            title="禁用菜谱" width="30%"
+            :visible="disableDialog.visible" :close-on-click-modal="false"
+            @close="closeDisableDialog">
+            <el-form label-width="130px">
+                <el-form-item label="请填写禁用理由">
+                    <el-input v-model="disableDialog.editParam.forceTakeReason"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="disableDialog.visible = false">取消</el-button>
+                    <el-button type="primary" @click="handlerDisableRecipe()">保存</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
         <el-card class="box-card" style="margin-bottom: 20px;">
             <div slot="header" class="clearfix">
                 <div class="container">
@@ -68,10 +82,10 @@
           </el-table-column>
           <el-table-column prop="cover" label="菜谱封面"  width="200">
             <template slot-scope="scope">
-                <!-- <el-image v-if="scope.row.cover"
+                <el-image v-if="scope.row.cover"
                     style="width: 60px; height: 60px"
                     :src="$parsePath(scope.row.cover)" fit="cover">
-                </el-image> -->
+                </el-image>
             </template>
           </el-table-column>
           <el-table-column label="处理时间" width="150">
@@ -81,7 +95,13 @@
           </el-table-column>
           <el-table-column prop="isForceTake" label="是否下架" width="120">
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.isForceTake" disabled ></el-switch>
+                <el-popover v-if="scope.row.forceTakeReason" trigger="hover" placement="top">
+                    <p>下架原因描述: {{ scope.row.forceTakeReason }}</p>
+                    <div slot="reference" class="name-wrapper">
+                        <el-switch v-model="scope.row.isForceTake" @change="handlerTakeDown(scope.row)"></el-switch>
+                    </div>
+                </el-popover>
+                <el-switch v-else v-model="scope.row.isForceTake" @change="handlerTakeDown(scope.row)"></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="发表时间" sortable width="200">
@@ -103,7 +123,7 @@
 </template>
 
 <script>
-import { getRecipeList } from "@/api/func/recipeManage"
+import { getRecipeList,putTakedownRecipe } from "@/api/func/recipeManage"
 import { defaultPage,DEFAULT_UNIT_OPTIONS } from "@/settings"
 import { listReceiptCategory } from "@/api/func/recipeCategory"
 
@@ -130,7 +150,18 @@ export default {
             },
             dialogParam: {
                 visible: false,
-            }
+            },
+            disableDialog:{ // 禁用弹窗
+                visible: false,
+                desc: "", // 弹窗描述
+                recipe: "", // 存放操作用户对象
+                key: "", // 操作的键
+                editParam:{
+                    forceTakeReason: "", // 释放时间
+                    isForceTake: false, // 下架状态
+                    id: "" // 禁用的用户ID
+                }
+            },
         }
     },
     created(){
@@ -139,6 +170,65 @@ export default {
         this.initCategoryList()
     },
     methods: {
+        // 绑定下架菜谱
+        handlerTakeDown(row){
+            console.log("take down row",row)
+            if(row.isForceTake){
+                this.disableDialog.editParam.id = row.id,
+                this.disableDialog.editParam.isForceTake = row.isForceTake,
+                this.disableDialog.visible = true
+                this.disableDialog.recipe = row
+            }else{
+                this.$confirm("是否取消对该菜谱的下架", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( () => {
+                    let tempEditParam = {
+                        id: row.id,
+                        isForceTake: row.isForceTake,
+                        forceTakeReason: ""
+                    }
+                    putTakedownRecipe(tempEditParam).then( resp => {
+                        if(resp && resp.code == 200){
+                            this.$message.success(resp.message)
+                        }else{
+                            this.$message.error(resp.message)
+                        }
+                        // 刷新内容
+                        this.initRecipeData()
+                    })
+                }).catch(()=>{
+                    row.isForceTake = !row.isForceTake
+                })
+                
+            }
+        },
+        // 绑定提交禁止菜谱
+        handlerDisableRecipe(){
+            // 如果选择时间小于当前时间
+            if(this.disableDialog.editParam.forceTakeReason.length == 0){
+                this.$message.warning("请填写下架原因");
+                return
+            }
+            let tempEditParam = this.$util.deepClone(this.disableDialog.editParam)
+            putTakedownRecipe(tempEditParam).then( resp => {
+                if(resp && resp.code == 200){
+                    this.$message.success(resp.message)
+                }else{
+                    this.$message.error(resp.message)
+                }
+                this.disableDialog.visible = false
+                // 刷新内容
+                this.initRecipeData()
+            })
+        },
+        // 关闭操作弹窗
+        closeDisableDialog(){
+            this.disableDialog.editParam.forceTakeReason = ""
+            this.disableDialog.visible = false
+            this.disableDialog.recipe.isForceTake = !this.disableDialog.recipe.isForceTake
+        },
         // 初始化分类列表
         initCategoryList(){
             listReceiptCategory().then( resp => {

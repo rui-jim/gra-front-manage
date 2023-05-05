@@ -1,5 +1,20 @@
 <template>
     <div>
+        <el-dialog :modal-append-to-body="false" 
+            title="禁用评论" width="30%"
+            :visible="disableDialog.visible" :close-on-click-modal="false"
+            @close="closeDisableDialog">
+            <el-form label-width="130px">
+                <el-form-item label="请填写禁用理由">
+                    <el-input v-model="disableDialog.editParam.banReason"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="disableDialog.visible = false">取消</el-button>
+                    <el-button type="primary" @click="handlerDisableComment()">保存</el-button>
+                </el-form-item>
+                
+            </el-form>
+        </el-dialog>
         <el-card class="box-card" style="margin-bottom: 20px;">
             <div slot="header" class="clearfix">
                 <div class="container">
@@ -59,7 +74,13 @@
           </el-table-column>
           <el-table-column prop="isBan" label="禁用评论" width="120">
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.isBan" ></el-switch>
+                <el-popover v-if="scope.row.banReason" trigger="hover" placement="top">
+                    <p>下架原因描述: {{ scope.row.banReason }}</p>
+                    <div slot="reference" class="name-wrapper">
+                        <el-switch v-model="scope.row.isBan" @change="handlerTakeDown(scope.row)"></el-switch>
+                    </div>
+                </el-popover>
+                <el-switch v-else v-model="scope.row.isBan" @change="handlerTakeDown(scope.row)"></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="评论时间" sortable width="200">
@@ -73,7 +94,7 @@
 </template>
 
 <script>
-import { getRecipeCommentList } from "@/api/func/recipeComment"
+import { getRecipeCommentList,putBanRecipeComment } from "@/api/func/recipeComment"
 import { defaultPage } from "@/settings"
 import { listReceiptCategory } from "@/api/func/recipeCategory"
 
@@ -96,7 +117,18 @@ export default {
                 rName: "", // 查找的邮箱
                 cateId: "",
                 isBan: null // 是否被禁止
-            }
+            },
+            disableDialog:{ // 禁用弹窗
+                visible: false,
+                desc: "", // 弹窗描述
+                comment: "", // 存放操作用户对象
+                key: "", // 操作的键
+                editParam:{
+                    banReason: "", // 释放时间
+                    isBan: false, // 下架状态
+                    id: "" // 禁用的用户ID
+                }
+            },
         }
     },
     created(){
@@ -104,7 +136,64 @@ export default {
         this.initRecipeComment()
         this.initCategoryList()
     },
-    methods: {
+    methods: {// 绑定下架菜谱
+        handlerTakeDown(row){
+            if(row.isBan){
+                this.disableDialog.editParam.id = row.id,
+                this.disableDialog.editParam.isBan = row.isBan,
+                this.disableDialog.visible = true
+                this.disableDialog.comment = row
+            }else{
+                this.$confirm("是否取消对该评论的禁用", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( () => {
+                    let tempEditParam = {
+                        id: row.id,
+                        isBan: row.isBan,
+                        banReason: ""
+                    }
+                    putBanRecipeComment(tempEditParam).then( resp => {
+                        if(resp && resp.code == 200){
+                            this.$message.success(resp.message)
+                        }else{
+                            this.$message.error(resp.message)
+                        }
+                        // 刷新内容
+                        this.initRecipeComment()
+                    })
+                }).catch(()=>{
+                    row.isBan = !row.isBan
+                })
+                
+            }
+        },
+        // 绑定提交禁止评论
+        handlerDisableComment(){
+            // 如果选择时间小于当前时间
+            if(this.disableDialog.editParam.banReason.length == 0){
+                this.$message.warning("请填写下架原因");
+                return
+            }
+            let tempEditParam = this.$util.deepClone(this.disableDialog.editParam)
+            putBanRecipeComment(tempEditParam).then( resp => {
+                if(resp && resp.code == 200){
+                    this.$message.success(resp.message)
+                }else{
+                    this.$message.error(resp.message)
+                }
+                this.disableDialog.visible = false
+                // 刷新内容
+                this.initRecipeComment()
+            })
+        },
+        // 关闭操作弹窗
+        closeDisableDialog(){
+            this.disableDialog.editParam.banReason = ""
+            this.disableDialog.visible = false
+            this.disableDialog.comment.isBan = !this.disableDialog.comment.isBan
+        },
          // 初始化分类列表
          initCategoryList(){
             listReceiptCategory().then( resp => {

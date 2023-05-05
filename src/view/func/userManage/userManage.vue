@@ -18,6 +18,24 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
+        <el-dialog :modal-append-to-body="false" 
+            :title="disableDialog.desc" width="30%"
+            :visible="disableDialog.visible" :close-on-click-modal="false"
+            @close="closeDisableDialog">
+            <el-form label-width="130px">
+                <el-form-item label="解冻时间">
+                    <el-date-picker
+                        v-model="disableDialog.editParam.releaseTime"
+                        type="datetime"
+                        placeholder="选择日期时间" @change="handlerReleaseTime">
+                        </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="disableDialog.visible = false">取消</el-button>
+                    <el-button type="primary" :loading="loadingStatus" @click="handlerDisableUser()">保存</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
         <el-card class="box-card" style="margin-bottom: 20px;">
             <div slot="header" class="clearfix">
                 <div class="container">
@@ -78,7 +96,7 @@
           style="width: 100%;padding: 20px;" >
         <!-- <el-table :data="tableData" style="width: 100%;margin-bottom: 20px;" height="auto"
          row-key="id" border  highlight-current-row > -->
-         <el-table-column prop="unickname" label="用户昵称">
+         <el-table-column prop="unickname" label="用户昵称" width="140">
             <!-- <template slot-scope="scope">
                 <el-popover v-if="scope.row.rname" trigger="hover" placement="top">
                     <p>所属角色: {{ scope.row.rname }}</p>
@@ -108,17 +126,17 @@
           </el-table-column>
           <el-table-column prop="isDisableUser" label="禁止用户登录" width="120">
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.isDisableUser" disabled ></el-switch>
+                <el-switch v-model="scope.row.isDisableUser" @change="disableSwitch(scope.row,'isDisableUser',1,'禁止用户登录')"></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="isDisableDiscuss" label="禁止用户评论" width="120">
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.isDisableDiscuss" ></el-switch>
+                <el-switch v-model="scope.row.isDisableDiscuss" @change="disableSwitch(scope.row,'isDisableDiscuss',2,'禁止用户评论')"></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="isDisablePublishRecipe" label="禁止用户发表菜谱" >
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.isDisablePublishRecipe" ></el-switch>
+                <el-switch v-model="scope.row.isDisablePublishRecipe" @change="disableSwitch(scope.row,'isDisablePublishRecipe',3,'禁止用户发表菜谱')"></el-switch>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="加入时间" sortable width="200">
@@ -144,7 +162,7 @@
 
 <script>
 import { getRoleList } from "@/api/func/roleManage"
-import { getUserList,putUpdateUserRole,getUserRole } from "@/api/func/userManage"
+import { getUserList,putUpdateUserRole,getUserRole,putDisableUser } from "@/api/func/userManage"
 import { defaultPage } from "@/settings"
 
 export default {
@@ -167,6 +185,17 @@ export default {
                     uNickname: "", // 用户昵称
                 } 
             },
+            disableDialog:{ // 禁用弹窗
+                visible: false,
+                desc: "", // 弹窗描述
+                user: "", // 存放操作用户对象
+                key: "", // 操作的键
+                editParam:{
+                    type: 1, // 1为用户禁止登录、2为禁止用户评论 3禁止用户发表菜谱
+                    releaseTime: new Date(), // 释放时间
+                    uId: "" // 禁用的用户ID
+                }
+            },
             perCascaderProps:{ // 权限多选的props
                 multiple: true
             },
@@ -188,6 +217,71 @@ export default {
         this.initRoleList()
     },
     methods: {
+        // 关闭操作弹窗
+        closeDisableDialog(){
+            this.disableDialog.editParam.releaseTime = ""
+            this.disableDialog.visible = false
+            this.disableDialog.user[this.disableDialog.key] = !this.disableDialog.user[this.disableDialog.key]
+        },
+        // 绑定操作时间
+        handlerReleaseTime(time){
+            this.disableDialog.editParam.releaseTime = time.getTime()
+        },
+        // 绑定是否禁止用户登录
+        handlerDisableUser(){
+            // 如果选择时间小于当前时间
+            if(this.disableDialog.releaseTime < new Date().getTime()){
+                this.$message.warning("选择时间不能小于当前时间");
+                return
+            }
+            let tempEditParam = this.$util.deepClone(this.disableDialog.editParam)
+            tempEditParam.releaseTime = new Date(tempEditParam.releaseTime).getTime()
+            putDisableUser(tempEditParam).then( resp => {
+                if(resp && resp.code == 200){
+                    this.$message.success(resp.message)
+                }else{
+                    this.$message.error(resp.message)
+                }
+                this.disableDialog.visible = false
+                // 刷新内容
+                this.initUserData()
+            })
+        },
+        // 禁用的按钮
+        disableSwitch(row,switchKey,type,desc){
+            if(row[switchKey]){
+                this.disableDialog.editParam.uId = row.uId,
+                this.disableDialog.editParam.type = type,
+                this.disableDialog.visible = true
+                this.disableDialog.desc = desc
+                this.disableDialog.user = row
+                this.disableDialog.key = switchKey
+            }else{
+                this.$confirm("是否取消该用户的限制", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( () => {
+                    let tempEditParam = {
+                        uId: row.uId,
+                        type,
+                        releaseTime: new Date().getTime()
+                    }
+                    putDisableUser(tempEditParam).then( resp => {
+                        if(resp && resp.code == 200){
+                            this.$message.success(resp.message)
+                        }else{
+                            this.$message.error(resp.message)
+                        }
+                        // 刷新内容
+                        this.initUserData()
+                    })
+                }).catch(()=>{
+                    row[switchKey] = true
+                })
+                
+            }
+        },
         changeRole(valList){
             this.dialogConfig.editParam.rIdList = valList.map(val => {
                 return val[val.length - 1]

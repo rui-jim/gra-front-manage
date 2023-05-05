@@ -9,3 +9,12 @@ export function getRecipeCommentList(search){
         params: {...search}
     })
 }
+
+
+export function putBanRecipeComment(data){
+    return request({
+        url: url+'/ban',
+        method: "put",
+        data: data
+    })
+}

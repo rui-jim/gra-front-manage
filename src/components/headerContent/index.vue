@@ -19,7 +19,7 @@
         <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="showUserInfo">个人信息</el-dropdown-item>
+        <!-- <el-dropdown-item command="showUserInfo">个人信息</el-dropdown-item> -->
         <el-dropdown-item command="logout" >退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>

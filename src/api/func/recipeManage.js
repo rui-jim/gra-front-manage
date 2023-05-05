@@ -9,3 +9,12 @@ export function getRecipeList(params){
         params
     })
 }
+
+// 下架菜谱
+export function putTakedownRecipe(data){
+    return request({
+        url: url+'/force/take',
+        method: "put",
+        data: data
+    })
+}

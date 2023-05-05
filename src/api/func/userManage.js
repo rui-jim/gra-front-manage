@@ -19,9 +19,25 @@ export function getUserRole(params){
     })
 }
 
+export function getUserRoleList(params){
+    return request({
+        url: url+"/role",
+        method: "get",
+        params
+    })
+}
+
 export function putUpdateUserRole(data){
     return request({
         url: url+'/grant',
+        method: "put",
+        data
+    })
+}
+
+export function putDisableUser(data){
+    return request({
+        url: url+'/disable',
         method: "put",
         data
     })

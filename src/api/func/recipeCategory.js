@@ -10,6 +10,7 @@ export function listReceiptCategory(search){
     })
 }
 
+
 export function delReceiptCategory(id){
     return request({
         url: url,
@@ -30,7 +31,7 @@ export function saveReceiptCategory(data){
 }
 
 
-// 保存菜谱分类
+// 修改菜谱分类
 export function updateReceiptCategory(data){
     return request({
         url: url,
