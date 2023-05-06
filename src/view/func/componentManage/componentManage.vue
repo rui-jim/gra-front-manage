@@ -80,6 +80,7 @@
 import { getComponentList,delComponent } from "@/api/func/component"
 import { defaultPage } from "@/settings"
 import addComponent from "./addComponent.vue"
+import pageUtils from "@/util/pageUtils"
 
 export default {
     components: {
@@ -112,6 +113,7 @@ export default {
     },
     created(){
         this.pageParam = this.$util.deepClone(defaultPage)
+        pageUtils.registerTag(this.$store, this.$route);
         this.initComponentList()
     },
     methods: {

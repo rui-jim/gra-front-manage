@@ -126,7 +126,7 @@
 import { getRecipeList,putTakedownRecipe } from "@/api/func/recipeManage"
 import { defaultPage,DEFAULT_UNIT_OPTIONS } from "@/settings"
 import { listReceiptCategory } from "@/api/func/recipeCategory"
-
+import pageUtils from "@/util/pageUtils"
 
 export default {
     data(){
@@ -166,6 +166,7 @@ export default {
     },
     created(){
         this.pageParam = this.$util.deepClone(defaultPage)
+        pageUtils.registerTag(this.$store, this.$route);
         this.initRecipeData()
         this.initCategoryList()
     },

@@ -164,6 +164,7 @@
 import { getRoleList } from "@/api/func/roleManage"
 import { getUserList,putUpdateUserRole,getUserRole,putDisableUser } from "@/api/func/userManage"
 import { defaultPage } from "@/settings"
+import pageUtils from "@/util/pageUtils"
 
 export default {
     data(){
@@ -212,6 +213,7 @@ export default {
         }
     },
     created(){
+        pageUtils.registerTag(this.$store, this.$route);
         this.pageParam = this.$util.deepClone(defaultPage)
         this.initUserData()
         this.initRoleList()

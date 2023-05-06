@@ -82,6 +82,7 @@ import { getComponentList } from "@/api/func/component"
 import { getRoleList,delRole } from "@/api/func/roleManage"
 import { defaultPage } from "@/settings"
 import addRole from "./addRole.vue"
+import pageUtils from "@/util/pageUtils"
 
 export default {
     components: {
@@ -112,6 +113,7 @@ export default {
     },
     created(){
         this.pageParam = this.$util.deepClone(defaultPage)
+        pageUtils.registerTag(this.$store, this.$route);
         this.initComponentList()
         this.initRoleList()
     },

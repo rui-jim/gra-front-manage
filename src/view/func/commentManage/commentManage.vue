@@ -97,6 +97,7 @@
 import { getRecipeCommentList,putBanRecipeComment } from "@/api/func/recipeComment"
 import { defaultPage } from "@/settings"
 import { listReceiptCategory } from "@/api/func/recipeCategory"
+import pageUtils from "@/util/pageUtils"
 
 export default {
     data(){
@@ -132,6 +133,7 @@ export default {
         }
     },
     created(){
+        pageUtils.registerTag(this.$store, this.$route);
         this.pageParam = this.$util.deepClone(defaultPage)
         this.initRecipeComment()
         this.initCategoryList()
