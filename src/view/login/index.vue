@@ -78,7 +78,7 @@ export default {
             setToken(response.data.token);
             console.log("token ", getToken());
             this.$store.dispatch("tagTest/clear_tag");
-            this.$router.push({ path: "/" });
+            this.$router.replace("/");
           } else {
             this.$message({
               type: "error",

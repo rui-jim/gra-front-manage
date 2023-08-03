@@ -29,6 +29,10 @@ const fixElTableErr = (table) => {
 fixElTableErr(Table)
 
 Vue.use(Element)
+
+// 修改标题
+document.title = '美食网站后台管理系统'
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -40,4 +44,5 @@ new Vue({
   created() {
     this.$store.dispatch("tagTest/init_tag")
   },
+  silent: true
 })

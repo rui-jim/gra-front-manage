@@ -8,7 +8,7 @@
         <sidebar></sidebar>
       </el-aside>
 
-      <el-main>
+      <el-main style="min-width: 600px">
         <contentMenu class="common" style="padding: 15px;"></contentMenu>
         <tag class="common"></tag>
         <router-view class="common main-router"></router-view>

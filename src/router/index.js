@@ -42,7 +42,7 @@ function loadInfo(next, to) {
         console.log('response loadINfo routes ',response)
         if (response.code == 200) {
             store.dispatch('userInfo/init_userinfo', response.data.data).then(() => {
-                next({ ...to })
+                next(to)
             })
             if(store.state.menuInfo.menu.length == 0){
                 getUserComponenttList().then(resp => {
